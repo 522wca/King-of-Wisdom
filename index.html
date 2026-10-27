@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>智慧闖關王</title>
+<style>
+:root{--bg:#fdf6e9;--card:#fff;--tx:#2b2540;--mu:#7a7390;--ac:#6c4cf1;--ok:#1faa6b;--no:#e5484d;--bd:#e8dfcf;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#17142a;--card:#241f40;--tx:#f1eefc;--mu:#a49dc4;--ac:#9a82ff;--bd:#3a3360}}
+:root[data-theme="dark"]{--bg:#17142a;--card:#241f40;--tx:#f1eefc;--mu:#a49dc4;--ac:#9a82ff;--bd:#3a3360}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font-family:"PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif;line-height:1.6}
+#app{max-width:560px;margin:0 auto;padding:20px 16px 40px}
+h1{margin:8px 0 0;font-size:28px}h2{margin:4px 0 12px}
+.mu{color:var(--mu);margin:4px 0 16px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+button{font:inherit;color:inherit;cursor:pointer}
+.cat{background:var(--card);border:2px solid var(--bd);border-top:6px solid var(--c);border-radius:16px;padding:16px 8px;display:flex;flex-direction:column;align-items:center;gap:2px}
+.cat .em{font-size:38px}.cat b{font-size:18px}.cat small{color:var(--mu)}
+.lv,.opt,.btn{display:block;width:100%;text-align:left;background:var(--card);border:2px solid var(--bd);border-radius:14px;padding:14px 16px;margin:10px 0}
+.lv:disabled{opacity:.45;cursor:not-allowed}
+.btn{background:var(--ac);color:#fff;border-color:var(--ac);text-align:center;font-weight:700}
+.ghost{background:none;border:none;color:var(--mu);padding:4px 0;font-size:15px}
+.bar{height:8px;background:var(--bd);border-radius:8px;overflow:hidden;margin:10px 0 18px}
+.bar i{display:block;height:100%;background:var(--ac)}
+.top{display:flex;justify-content:space-between;align-items:center}
+.q{font-size:20px;font-weight:700;margin:6px 0 12px}
+.opt.ok{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 18%,var(--card))}
+.opt.no{border-color:var(--no);background:color-mix(in srgb,var(--no) 18%,var(--card))}
+.note{background:var(--card);border:2px dashed var(--ac);border-radius:14px;padding:12px 14px;margin:12px 0}
+.center{text-align:center}.big{font-size:56px;margin:10px 0}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+// 題庫格式：[題目, [正確答案, 錯誤1, 錯誤2, 錯誤3], 知識小卡]
+// 想擴充？在對應關卡的 q 陣列新增題目，或在 L 新增關卡即可。
+const D=[
+{id:'lit',n:'文學',e:'📚',c:'#e0663c',L:[
+{t:'詩詞入門',q:[
+['《紅樓夢》的作者是誰？',['曹雪芹','施耐庵','吳承恩','羅貫中'],'《紅樓夢》與《西遊記》（吳承恩）、《水滸傳》（施耐庵）、《三國演義》（羅貫中）並稱四大名著。'],
+['「床前明月光，疑是地上霜」的作者是誰？',['李白','杜甫','白居易','王維'],'這是李白的《靜夜思》，抒發旅人思鄉之情。'],
+['「春眠不覺曉，處處聞啼鳥」出自哪位詩人？',['孟浩然','王維','李商隱','杜牧'],'這是孟浩然的《春曉》，是唐代山水田園詩派的代表作。']]},
+{t:'中外名著',q:[
+['《哈姆雷特》的作者是誰？',['莎士比亞','狄更斯','托爾斯泰','雨果'],'莎士比亞是英國劇作家，四大悲劇包括《哈姆雷特》《奧賽羅》《李爾王》《馬克白》。'],
+['「俳句」是哪個國家的傳統詩歌？',['日本','韓國','法國','印度'],'俳句通常為五、七、五共十七音，常會加入表示季節的詞語。'],
+['《小王子》的作者是哪個國家的人？',['法國','英國','德國','義大利'],'作者聖修伯里是法國作家兼飛行員，書中名句：真正重要的東西，用眼睛是看不見的。']]}]},
+{id:'math',n:'數學',e:'🔢',c:'#2f7fe0',L:[
+{t:'基礎運算',q:[
+['7 × 8 等於多少？',['56','54','63','48'],'九九乘法表中，七八五十六。'],
+['圓周率 π 約等於多少？',['3.14159','2.71828','1.41421','1.61803'],'2.71828 是自然對數的底 e，1.41421 是 √2，1.61803 是黃金比例。'],
+['三角形的三個內角和是幾度？',['180 度','90 度','270 度','360 度'],'在平面上，任何三角形的內角和都是 180 度。']]},
+{t:'數學思維',q:[
+['1 + 2 + 3 + … + 100 等於多少？',['5050','5000','5100','4950'],'傳說少年高斯把首尾相加，(1+100)×50 = 5050，這就是「首尾配對法」。'],
+['下列哪個數是質數？',['53','51','57','91'],'51 = 3×17、57 = 3×19、91 = 7×13，只有 53 除了 1 和自己外沒有其他因數。'],
+['2 的 10 次方等於多少？',['1024','1000','512','2048'],'2 的 10 次方 = 1024，所以電腦裡 1 KB 常等於 1024 位元組。']]}]},
+{id:'art',n:'藝術',e:'🎨',c:'#b8409a',L:[
+{t:'名畫鑑賞',q:[
+['《蒙娜麗莎》是哪位藝術家的作品？',['達文西','米開朗基羅','拉斐爾','梵谷'],'達文西是文藝復興時期的全才，畫作現收藏於巴黎羅浮宮。'],
+['《星夜》是哪位畫家的作品？',['梵谷','莫內','畢卡索','達利'],'梵谷以旋轉的筆觸與強烈色彩聞名，《星夜》畫於 1889 年。'],
+['紅色與藍色顏料混合，會得到什麼顏色？',['紫色','綠色','橘色','棕色'],'紅 + 黃 = 橘、黃 + 藍 = 綠、紅 + 藍 = 紫，這是調色的基本概念。']]},
+{t:'音樂與流派',q:[
+['《命運交響曲》的作曲家是誰？',['貝多芬','莫札特','巴哈','蕭邦'],'貝多芬第五號交響曲開頭的「命運動機」舉世聞名，他晚年雖失聰仍持續創作。'],
+['「立體主義」的代表畫家是誰？',['畢卡索','莫內','達利','馬諦斯'],'立體主義把物體拆解成幾何形體，從多個角度同時呈現。'],
+['《吶喊》的作者孟克來自哪個國家？',['挪威','荷蘭','西班牙','德國'],'孟克是挪威表現主義畫家，《吶喊》表現現代人的焦慮不安。']]}]},
+{id:'sci',n:'科學',e:'🔬',c:'#1faa6b',L:[
+{t:'生活科學',q:[
+['水的化學式是什麼？',['H₂O','CO₂','O₂','NaCl'],'一個水分子由 2 個氫原子與 1 個氧原子組成。'],
+['太陽系中最大的行星是哪一顆？',['木星','土星','地球','海王星'],'木星的質量比其他七顆行星加起來還大，著名的大紅斑是一場巨大風暴。'],
+['植物行光合作用時會釋放什麼氣體？',['氧氣','二氧化碳','氮氣','氫氣'],'植物吸收二氧化碳與水，利用光能製造養分，同時釋放氧氣。']]},
+{t:'探索宇宙與身體',q:[
+['光在真空中的速度約為每秒多少？',['30 萬公里','3 萬公里','300 萬公里','3,000 公里'],'光每秒可繞地球約 7 圈半，太陽光要約 8 分鐘才到達地球。'],
+['人體最大的器官是什麼？',['皮膚','肝臟','肺','大腦'],'成人皮膚面積約 1.5 到 2 平方公尺，負責保護、調節體溫與感覺。'],
+['自然界中最硬的天然物質是什麼？',['鑽石','黃金','鐵','石英'],'鑽石由碳原子以立體結構緊密排列而成，和石墨成分相同、硬度卻天差地別。']]}]},
+{id:'his',n:'歷史',e:'🏛️',c:'#a0701f',L:[
+{t:'中國與台灣史',q:[
+['萬里長城最早是哪位皇帝大規模連接修建的？',['秦始皇','漢武帝','唐太宗','康熙'],'秦始皇統一六國後，把各國舊有的城牆連接並加固，用來防範北方遊牧民族。'],
+['活字印刷術是哪位發明家發明的？',['畢昇','蔡倫','張衡','祖沖之'],'畢昇是北宋人，發明膠泥活字。蔡倫則是改良造紙術的人。'],
+['1662 年鄭成功擊退哪個勢力，收復臺灣？',['荷蘭','西班牙','日本','葡萄牙'],'當時荷蘭東印度公司統治臺灣南部，鄭成功擊敗荷蘭人後建立東寧政權。']]},
+{t:'世界史',q:[
+['第二次世界大戰於哪一年結束？',['1945 年','1918 年','1939 年','1950 年'],'1945 年同盟國勝利，同年聯合國成立。1918 年則是第一次世界大戰結束。'],
+['古埃及的金字塔主要用途是什麼？',['法老的陵墓','糧食倉庫','天文台','市集'],'吉薩的大金字塔是胡夫法老的陵墓，距今約 4500 年。'],
+['1492 年哥倫布橫渡大西洋後到達哪裡？',['美洲加勒比海島嶼','印度','澳洲','非洲好望角'],'他原本想找通往亞洲的航線，卻意外抵達美洲，開啟歐洲與美洲的大規模接觸。']]}]},
+{id:'geo',n:'地理',e:'🌏',c:'#0e8a8a',L:[
+{t:'台灣與世界',q:[
+['台灣最高的山是哪一座？',['玉山','雪山','阿里山','合歡山'],'玉山海拔約 3,952 公尺，是東北亞最高峰。'],
+['世界上面積最大的洲是哪一個？',['亞洲','非洲','北美洲','歐洲'],'亞洲面積約占全球陸地的三成，也是人口最多的洲。'],
+['世界上最大的熱沙漠是哪一個？',['撒哈拉沙漠','戈壁沙漠','阿塔卡馬沙漠','卡拉哈里沙漠'],'撒哈拉位於北非。若連冰漠都算，最大的沙漠其實是南極洲。']]},
+{t:'地球奧秘',q:[
+['澳洲的首都是哪一個城市？',['坎培拉','雪梨','墨爾本','伯斯'],'雪梨最大最有名，但首都是坎培拉，因為雪梨與墨爾本爭首都，所以另建新城折衷。'],
+['地球表面約有多少比例是海洋？',['約 71%','約 50%','約 30%','約 90%'],'海洋約占地球表面七成，所以從太空看地球是藍色的。'],
+['赤道穿過下列哪一個國家？',['印尼','日本','韓國','紐西蘭'],'赤道經過印尼、肯亞、厄瓜多等國，赤道附近終年炎熱。']]}]},
+{id:'tw',n:'台灣生活',e:'🧋',c:'#c9722a',L:[
+{t:'美食小吃',q:[
+['珍珠奶茶起源於哪裡？',['台灣','香港','日本','泰國'],'珍珠奶茶 1980 年代誕生於台灣，台中與台南的茶館都自稱是發明者。'],
+['蚵仔煎裡的「蚵仔」是哪種生物？',['牡蠣','蛤蜊','干貝','海瓜子'],'蚵仔就是牡蠣，台灣西部沿海有許多養蚵人家。'],
+['端午節的代表習俗是什麼？',['吃粽子、賽龍舟','吃月餅','吃湯圓','吃年糕'],'端午節在農曆五月五日，相傳是為了紀念愛國詩人屈原。']]},
+{t:'節慶與生活',q:[
+['中秋節是農曆幾月幾日？',['八月十五','七月七','九月九','十二月八'],'中秋節賞月、吃月餅。七月七是七夕，九月九是重陽節。'],
+['台灣哪個地方以元宵放天燈聞名？',['新北平溪','屏東墾丁','南投日月潭','嘉義阿里山'],'平溪昔日用天燈報平安，如今成為元宵與跨年的熱門活動。'],
+['台灣高鐵從台北到高雄，最快約需多久？',['約 1.5 小時','約 4 小時','約 30 分鐘','約 6 小時'],'高鐵最高時速約 300 公里，大幅縮短了西部走廊的旅行時間。']]}]},
+{id:'news',n:'科技時事',e:'📰',c:'#4b5563',L:[
+{t:'科技新知',q:[
+['ChatGPT 是由哪家公司推出的？',['OpenAI','Google','Meta','蘋果'],'ChatGPT 於 2022 年 11 月推出，掀起生成式 AI 的熱潮。'],
+['「AI」的英文全名是什麼？',['Artificial Intelligence','Auto Internet','Advanced Info','Active Index'],'AI 就是人工智慧，讓電腦能執行像是學習、辨識、對話等需要智慧的工作。'],
+['被稱為台灣「護國神山」的科技公司是哪一家？',['台積電','鴻海','聯發科','華碩'],'台積電是全球最大的晶圓代工廠，生產各種先進晶片。']]},
+{t:'近年大事',q:[
+['2024 年夏季奧運在哪個城市舉辦？',['巴黎','洛杉磯','東京','倫敦'],'巴黎奧運是 2024 年夏天登場，下一屆 2028 年將在洛杉磯舉行。'],
+['2026 年世界盃足球賽由哪三國共同主辦？',['美國、加拿大、墨西哥','日本、韓國、中國','英國、法國、德國','巴西、阿根廷、智利'],'這屆起參賽隊伍擴大到 48 隊，是史上首次由三個國家共同主辦。'],
+['2026 年冬季奧運在哪裡舉行？',['義大利米蘭與科爾蒂納','日本札幌','瑞士日內瓦','加拿大溫哥華'],'2026 年 2 月在義大利舉行，首次由兩個城市共同冠名主辦。']]}]},
+{id:'meme',n:'梗圖挑戰',e:'😂',c:'#e0457b',L:[
+{t:'網路用語',q:[
+['「芭比Q了」是什麼意思？',['完蛋了','很好吃','要開派對','很漂亮'],'來自 BBQ 烤肉的諧音，東西烤焦了就是「完蛋了」，用來形容事情搞砸。'],
+['「yyds」是什麼意思？',['永遠的神','有夠有趣的影片','陽光與雨水','你要點讚'],'取自拼音「永遠的神」的縮寫，用來稱讚某人或某事非常厲害。'],
+['「躺平」指的是什麼？',['不再拚命競爭，降低慾望的生活態度','躺在床上睡覺','健身的一種姿勢','減肥的方法'],'躺平是近年流行的網路詞，形容面對高壓競爭時選擇少欲望、簡單過日子。']]},
+{t:'emoji 猜成語',q:[
+['🖌️🐍🦶　這是哪個成語？',['畫蛇添足','守株待兔','杯弓蛇影','狐假虎威'],'比賽畫蛇，先畫完的人替蛇加上腳，反而輸了，比喻多此一舉。'],
+['🌳⏳🐇　這是哪個成語？',['守株待兔','畫蛇添足','亡羊補牢','刻舟求劍'],'農夫看到兔子撞樹而死，便天天守在樹下等，比喻不努力卻想僥倖成功。'],
+['🦊👉🐯👑　這是哪個成語？',['狐假虎威','虎頭蛇尾','如虎添翼','狼狽為奸'],'狐狸借老虎的威勢嚇跑百獸，比喻仗著別人的勢力欺負人。']]}]}
+];
+let S={};try{S=JSON.parse(localStorage.getItem('zhiwang')||'{}')}catch(e){}
+const save=()=>{try{localStorage.setItem('zhiwang',JSON.stringify(S))}catch(e){}};
+const $=document.getElementById('app');
+const sh=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const tot=()=>Object.values(S).reduce((a,b)=>a+b,0);
+const MAX=D.reduce((a,c)=>a+c.L.length*3,0);
+const rank=()=>{const r=tot()/MAX;return r>=1?'👑 智慧王':r>=.7?'🎓 智慧大師':r>=.4?'📖 博學達人':r>0?'🌱 求知學徒':'🥚 智慧新芽'};
+function home(){
+$.innerHTML=`<h1>🏆 智慧闖關王</h1><p class="mu">${rank()}・⭐ ${tot()} / ${MAX}</p><div class="grid">${D.map((c,i)=>`<button class="cat" style="--c:${c.c}" onclick="cat(${i})"><span class="em">${c.e}</span><b>${c.n}</b><small>⭐ ${c.L.reduce((a,_,j)=>a+(S[c.id+j]||0),0)} / ${c.L.length*3}</small></button>`).join('')}</div><p class="mu" style="margin-top:20px">每關 3 顆愛心，答對學新知，答錯也有知識小卡！</p>`}
+function cat(i){const c=D[i];
+$.innerHTML=`<button class="ghost" onclick="home()">← 返回</button><h2>${c.e} ${c.n}</h2>${c.L.map((l,j)=>{const lock=j>0&&!S[c.id+(j-1)];const s=S[c.id+j]||0;return `<button class="lv" ${lock?'disabled':''} onclick="play(${i},${j})"><b>${lock?'🔒':'🚩'} 第 ${j+1} 關：${l.t}</b><br><small class="mu">${'⭐'.repeat(s)+'☆'.repeat(3-s)}${lock?'（先通過上一關）':''}</small></button>`}).join('')}`}
+let G;
+function play(i,j){G={i,j,qs:sh(D[i].L[j].q),k:0,life:3,wrong:0};ask()}
+function ask(){
+const q=G.qs[G.k];G.o=sh(q[1].map((t,x)=>[t,x==0]));G.done=false;
+$.innerHTML=`<div class="top"><button class="ghost" onclick="cat(${G.i})">✕ 離開</button><span>${'❤️'.repeat(G.life)+'🖤'.repeat(3-G.life)}</span></div><div class="bar"><i style="width:${G.k/G.qs.length*100}%"></i></div><p class="mu">第 ${G.k+1} / ${G.qs.length} 題</p><div class="q">${q[0]}</div>${G.o.map((o,x)=>`<button class="opt" onclick="pick(${x})">${o[0]}</button>`).join('')}<div id="fb"></div>`}
+function pick(x){if(G.done)return;G.done=true;
+const q=G.qs[G.k],ok=G.o[x][1];
+document.querySelectorAll('.opt').forEach((b,n)=>{if(G.o[n][1])b.classList.add('ok');else if(n==x)b.classList.add('no')});
+if(!ok){G.life--;G.wrong++}
+const last=G.k==G.qs.length-1,over=G.life==0;
+document.getElementById('fb').innerHTML=`<div class="note"><b>${ok?'✅ 答對了！':'❌ 再接再厲！'}</b><br>💡 知識小卡：${q[2]}</div><button class="btn" onclick="${over||last?'end()':'G.k++;ask()'}">${over||last?'看結果':'下一題 →'}</button>`}
+function end(){
+const win=G.life>0,s=win?3-G.wrong:0,c=D[G.i],key=c.id+G.j;
+if(win&&s>(S[key]||0)){S[key]=s;save()}
+const more=win&&G.j<c.L.length-1;
+$.innerHTML=`<div class="center"><div class="big">${win?'🎉':'💪'}</div><h2>${win?'闖關成功！':'挑戰失敗'}</h2><p style="font-size:28px;margin:6px">${win?'⭐'.repeat(s)+'☆'.repeat(3-s):'愛心用完了'}</p><p class="mu">${win?'目前稱號：'+rank():'複習一下知識小卡，再試一次吧！'}</p></div><button class="btn" onclick="play(${G.i},${G.j})">${win?'重玩本關':'再挑戰一次'}</button>${more?`<button class="btn" onclick="play(${G.i},${G.j+1})">下一關 →</button>`:''}<button class="lv center" onclick="home()">回到主選單</button>`}
+home();
+</script>
+</body>
+</html>
