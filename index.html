@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>小遊戲大廳</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🎮%3C/text%3E%3C/svg%3E">
+<style>
+:root{--bg:#fdf6e9;--card:#fff;--tx:#2b2540;--mu:#7a7390;--bd:#e8dfcf;--a1:#6c4cf1;--a2:#c4542d;box-sizing:border-box}
+@media(prefers-color-scheme:dark){:root{--bg:#17142a;--card:#241f40;--tx:#f1eefc;--mu:#a49dc4;--bd:#3a3360;--a1:#9a82ff;--a2:#e0794f}}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;background:var(--bg);color:var(--tx);font-family:"PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif;line-height:1.6}
+main{max-width:760px;margin:0 auto;padding:48px 16px 40px}
+h1{font-size:32px;margin:0}
+.sub{color:var(--mu);margin:6px 0 28px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
+.g{display:flex;flex-direction:column;gap:8px;background:var(--card);border:2px solid var(--bd);border-top:8px solid var(--c);border-radius:20px;padding:22px;color:inherit;text-decoration:none;transition:transform .15s,box-shadow .15s}
+.g:hover,.g:focus-visible{transform:translateY(-4px);box-shadow:0 10px 24px rgba(0,0,0,.15)}
+.em{font-size:52px;line-height:1}
+.g h2{margin:4px 0 0;font-size:22px}
+.g p{margin:0;color:var(--mu);font-size:14px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+.tags span{font-size:12px;border:1px solid var(--bd);border-radius:999px;padding:2px 10px;color:var(--mu)}
+.go{margin-top:auto;padding-top:10px;font-weight:700;color:var(--c)}
+footer{margin-top:36px;color:var(--mu);font-size:13px;text-align:center}
+</style>
+</head>
+<body>
+<main>
+<h1>🎮 小遊戲大廳</h1>
+<p class="sub">不用安裝、不限時間，點開就能玩，進度自動存在你的瀏覽器。</p>
+<div class="grid">
+<a class="g" style="--c:var(--a1)" href="games/jigsaw/">
+<div class="em">🧩</div><h2>線上拼圖</h2>
+<p>每次隨機生成一張畫：抽象、印象派、水彩、手繪素描、點描等風格，也能上傳自己的照片來拼。</p>
+<div class="tags"><span>3 種難度</span><span>12–150 片</span><span>不限時間</span><span>自動存檔</span></div>
+<div class="go">開始遊戲 →</div></a>
+<a class="g" style="--c:var(--a2)" href="games/quiz/">
+<div class="em">🧠</div><h2>智慧闖關王</h2>
+<p>選擇主題、一關一關挑戰知識題，答對才能過關。</p>
+<div class="tags"><span>知識問答</span><span>闖關模式</span></div>
+<div class="go">開始遊戲 →</div></a>
+</div>
+<footer>更多遊戲持續增加中</footer>
+</main>
+</body>
+</html>
